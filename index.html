@@ -112,6 +112,35 @@
             0%, 100% { opacity: 0; transform: scale(0); }
             50% { opacity: 1; transform: scale(1); }
         }
+
+        /* Black cat */
+        .cat {
+            position: fixed;
+            bottom: 20px;
+            z-index: 10;
+            pointer-events: none;
+            animation: runAcross 2.5s linear forwards;
+        }
+        .cat.from-right {
+            animation: runAcrossRight 2.5s linear forwards;
+        }
+        @keyframes runAcross {
+            0% { left: -120px; }
+            100% { left: 110vw; }
+        }
+        @keyframes runAcrossRight {
+            0% { left: calc(100vw + 120px); transform: scaleX(-1); }
+            100% { left: -120px; transform: scaleX(-1); }
+        }
+        .cat svg {
+            width: 100px;
+            height: 60px;
+            animation: catBounce 0.25s ease-in-out infinite alternate;
+        }
+        @keyframes catBounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
     </style>
 </head>
 <body>
@@ -170,6 +199,65 @@
         // Continuous generation
         setInterval(createFloatingHeart, 800);
         setInterval(createSparkle, 500);
+
+        // Black cat that runs across the screen
+        function createCat() {
+            const cat = document.createElement('div');
+            const fromRight = Math.random() > 0.5;
+            cat.className = 'cat' + (fromRight ? ' from-right' : '');
+            cat.style.bottom = (Math.random() * 60 + 10) + 'px';
+            cat.innerHTML = `
+                <svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Tail -->
+                    <path d="M10 30 C0 15, 5 5, 15 10" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round">
+                        <animate attributeName="d" values="M10 30 C0 15, 5 5, 15 10;M10 30 C-5 20, 0 8, 12 12;M10 30 C0 15, 5 5, 15 10" dur="0.4s" repeatCount="indefinite"/>
+                    </path>
+                    <!-- Body -->
+                    <ellipse cx="45" cy="38" rx="30" ry="18" fill="#1a1a1a"/>
+                    <!-- Head -->
+                    <circle cx="82" cy="28" r="16" fill="#1a1a1a"/>
+                    <!-- Ears -->
+                    <polygon points="72,16 76,2 82,14" fill="#1a1a1a"/>
+                    <polygon points="86,14 92,2 96,16" fill="#1a1a1a"/>
+                    <polygon points="74,15 77,5 81,13" fill="#2a2a2a"/>
+                    <polygon points="87,13 91,5 94,15" fill="#2a2a2a"/>
+                    <!-- Eyes -->
+                    <ellipse cx="78" cy="26" rx="3" ry="3.5" fill="#4CAF50"/>
+                    <ellipse cx="90" cy="26" rx="3" ry="3.5" fill="#4CAF50"/>
+                    <ellipse cx="78" cy="26" rx="1.5" ry="3.5" fill="#111"/>
+                    <ellipse cx="90" cy="26" rx="1.5" ry="3.5" fill="#111"/>
+                    <!-- Nose -->
+                    <polygon points="83,30 85,32 81,32" fill="#e57373"/>
+                    <!-- Front legs (animated) -->
+                    <line x1="60" y1="52" x2="64" y2="65" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round">
+                        <animate attributeName="x2" values="68;58;68" dur="0.25s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="70" y1="52" x2="72" y2="65" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round">
+                        <animate attributeName="x2" values="66;76;66" dur="0.25s" repeatCount="indefinite"/>
+                    </line>
+                    <!-- Back legs (animated) -->
+                    <line x1="28" y1="50" x2="30" y2="65" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round">
+                        <animate attributeName="x2" values="34;24;34" dur="0.25s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="38" y1="50" x2="40" y2="65" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round">
+                        <animate attributeName="x2" values="34;44;34" dur="0.25s" repeatCount="indefinite"/>
+                    </line>
+                </svg>
+            `;
+            document.body.appendChild(cat);
+            setTimeout(() => cat.remove(), 3000);
+        }
+
+        // Run cat at random intervals (every 4-10 seconds)
+        function scheduleCat() {
+            const delay = Math.random() * 6000 + 4000;
+            setTimeout(() => {
+                createCat();
+                scheduleCat();
+            }, delay);
+        }
+        // First cat after 2 seconds
+        setTimeout(() => { createCat(); scheduleCat(); }, 2000);
     </script>
 </body>
 </html>
